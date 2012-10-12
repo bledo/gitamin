@@ -1,0 +1,26 @@
+<div align="left">
+<font face="Arial"><span style="font-size:8pt"><br /></span></font>
+<font face="Arial" color="#000080" size="+0"><span style="font-size:10pt"><b>________________________________________</b></span></font>
+<font face="Arial"><span style="font-size:8pt"><br /></span></font>
+<font face="Arial" color="#000080"><span style="font-size:8pt"><b>$user, $date:</b></span></font><br/>
+<font face="Arial"><span style="font-size:8pt"></span></font><br/>
+<div style="font-size:8pt;font-family:Arial;">$util.nl2br($comment)</div><br/>
+<font face="Arial"><span style="font-size:8pt"></span></font><br/>
+#*
+<div align="left">
+<font face="Arial"><span style="font-size:8pt"><br /></span></font>
+<font face="Arial" color="#000080" size="+0"><span style="font-size:10pt"><b>________________________________________</b></span></font>
+<font face="Arial"><span style="font-size:8pt"><br /></span></font>
+<font face="Arial" color="#000080"><span style="font-size:8pt"><b>SVN-Bot &lt;${svn_user}&gt;, date('m/d/Y'):</b></span></font><br/>
+<font face="Arial"><span style="font-size:8pt"></span></font><br/>
+<font face="Arial"><span style="font-size:8pt">'.htmlspecialchars($svn_comment).'</span></font><br/>
+<font face="Arial"><span style="font-size:8pt"></span></font><br/>
+<font face="Arial"><span style="font-size:8pt">SVN: <a href="'.$revlink.'">'.$revlink.'</a></span></font><br/>'."\n";
+$comment .= '<ul>';
+foreach ($paths as $p => $attr)
+{
+	$websvn_url = "http://10.1.1.12/svn.php?path=".urlencode($p);
+	$comment .= "<li>{$attr['action']} : <a href=\"$websvn_url\">$websvn_url</a></li>";
+}
+$comment .= '</ul></div>';
+*#

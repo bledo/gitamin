@@ -26,23 +26,29 @@
 
 	<target name="dist" depends="compile">
 		<mkdir dir="${build}/war"/>
+		<mkdir dir="${build}/war/WEB-INF"/>
+		<mkdir dir="${build}/war/WEB-INF/classes"/>
 		<mkdir dir="${dist}"/>
 
 		<copy todir="${build}/war">
 			<fileset dir="${web}" />
 		</copy>
 
-		<copy todir="${build}/war">
+		<copy todir="${build}/war/WEB-INF/classes">
 			<fileset dir="${res}/props" />
 			<fileset dir="${res}/views" />
 		</copy>
 
-		<war destfile="${war}" webxml="${web}/WEB-INF/web.xml">
-			<fileset dir="${web}"/>
+		<copy todir="${build}/war/WEB-INF/classes">
+			<fileset dir="${build}/classes" />
+		</copy>
+
+		<war destfile="${war}" webxml="${build}/war/WEB-INF/web.xml">
+			<fileset dir="${build}/war"/>
 			<lib dir="${runtime-lib}">
 				<!--exclude name="jdbc1.jar"/-->
 			</lib>
-			<classes dir="${build}/classes"/>
+			<classes dir="${build}/war/WEB-INF/classes"/>
 		</war>
 	</target>
 
