@@ -9,7 +9,6 @@
 	<property name="runtime-lib"  location="${lib}/runtime"/>
 	<property name="res"  location="res"/>
 	<property name="web"  location="web"/>
-	<property name="conf"  location="conf"/>
 	<property name="jar"  location="${dist}/bledo-${ver}.jar"/>
 	<property name="war"  location="${dist}/bledo-${ver}.war"/>
 
@@ -19,27 +18,36 @@
 	</path>
 
 	<target name="compile" depends="getlibs">
-		<mkdir dir="${build}/main"/>
-		<javac includeantruntime="false" srcdir="${src}" destdir="${build}/main">
+		<mkdir dir="${build}/classes"/>
+		<javac includeantruntime="false" srcdir="${src}" destdir="${build}/classes">
 			<classpath refid="compile-jars" />
 		</javac>
 	</target>
 
 	<target name="dist" depends="compile">
+		<mkdir dir="${build}/war"/>
 		<mkdir dir="${dist}"/>
-		<war destfile="${war}" webxml="${conf}/web.xml">
+
+		<copy todir="${build}/war">
+			<fileset dir="${web}" />
+		</copy>
+
+		<copy todir="${build}/war">
+			<fileset dir="${res}/*" />
+		</copy>
+
+		<war destfile="${war}" webxml="${web}/WEB-INF/web.xml">
 			<fileset dir="${web}"/>
 			<lib dir="${runtime-lib}">
 				<!--exclude name="jdbc1.jar"/-->
 			</lib>
-			<classes dir="${build}/main"/>
-			<classes dir="${res}"/>
+			<classes dir="${build}/classes"/>
 		</war>
 	</target>
 
 	<target name="jar" depends="compile">
 		<mkdir dir="${dist}"/>
-		<jar jarfile="${jar}" basedir="${build}/main">
+		<jar jarfile="${jar}" basedir="${build}/classes">
 		</jar>
 	</target>
 
