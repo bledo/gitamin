@@ -33,7 +33,8 @@
 		</copy>
 
 		<copy todir="${build}/war">
-			<fileset dir="${res}/*" />
+			<fileset dir="${res}/props" />
+			<fileset dir="${res}/views" />
 		</copy>
 
 		<war destfile="${war}" webxml="${web}/WEB-INF/web.xml">
