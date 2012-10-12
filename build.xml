@@ -6,8 +6,7 @@
 	<property name="dist" location="dist"/>
 	<property name="lib"  location="lib"/>
 	<property name="compile-lib"  location="${lib}/compile"/>
-	<property name="runtime-lib"  location="${lib}/run"/>
-	<property name="run"  location="${build}/run"/>
+	<property name="runtime-lib"  location="${lib}/runtime"/>
 	<property name="res"  location="res"/>
 	<property name="web"  location="web"/>
 	<property name="conf"  location="conf"/>
@@ -45,9 +44,9 @@
 	</target>
 
 	<target name="run" depends="dist">
-		<mkdir dir="${run}"/>
-		<mvnget o="org/mortbay/jetty" n="jetty-runner" r="8.1.7.v20120910" d="${run}/jetty-runner.jar" />
-		<java jar="${run}/jetty-runner.jar" fork="true">
+		<mkdir dir="${compile-lib}"/>
+		<mvnget o="org/mortbay/jetty" n="jetty-runner" r="8.1.7.v20120910" d="${compile-lib}/jetty-runner.jar" />
+		<java jar="${compile-lib}/jetty-runner.jar" fork="true">
 			<!-- classpath refid="compile-jars" / -->
 			<arg value="${war}" />
 		</java>
@@ -62,21 +61,19 @@
 	</target>
 
 	<target name="cleanAll" depends="clean">
-		<delete dir="${build}"/>
 		<delete dir="${lib}"/>
 	</target>
 
 	<target name="clean">
 		<delete dir="${dist}"/>
-		<delete dir="${build}/main"/>
+		<delete dir="${build}"/>
 	</target>
 
 	<target name="ivy" unless="sikip.download">
-		<mkdir dir="${build}"/>
-		<mkdir dir="${build}/ivy"/>
-		<wget src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar" dest="${build}/ivy/ivy-2.2.0.jar"/>
+		<mkdir dir="${compile-lib}"/>
+		<wget src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar" dest="${compile-lib}/ivy-2.2.0.jar"/>
 		<path id="ivy.lib.path">
-			<fileset dir="${build}/ivy" includes="*.jar"/>
+			<fileset dir="${compile-lib}" includes="ivy-*.jar"/>
 		</path>
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 	</target>
