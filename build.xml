@@ -1,0 +1,100 @@
+<project name="Bledo" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+	<description>Bledo build file</description>
+	<property name="ver" value="0.1"/>
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="dist" location="dist"/>
+	<property name="lib"  location="lib"/>
+	<property name="compile-lib"  location="${lib}/compile"/>
+	<property name="runtime-lib"  location="${lib}/run"/>
+	<property name="run"  location="${build}/run"/>
+	<property name="res"  location="res"/>
+	<property name="web"  location="web"/>
+	<property name="conf"  location="conf"/>
+	<property name="jar"  location="${dist}/bledo-${ver}.jar"/>
+	<property name="war"  location="${dist}/bledo-${ver}.war"/>
+
+	<path id="compile-jars">
+		<!-- <pathelement path="classes/" /> -->
+		<fileset dir="${compile-lib}"><include name="**/*.jar" /></fileset>
+	</path>
+
+	<target name="compile" depends="getlibs">
+		<mkdir dir="${build}/main"/>
+		<javac includeantruntime="false" srcdir="${src}" destdir="${build}/main">
+			<classpath refid="compile-jars" />
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile">
+		<mkdir dir="${dist}"/>
+		<war destfile="${war}" webxml="${conf}/web.xml">
+			<fileset dir="${web}"/>
+			<lib dir="${runtime-lib}">
+				<!--exclude name="jdbc1.jar"/-->
+			</lib>
+			<classes dir="${build}/main"/>
+			<classes dir="${res}"/>
+		</war>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${dist}"/>
+		<jar jarfile="${jar}" basedir="${build}/main">
+		</jar>
+	</target>
+
+	<target name="run" depends="dist">
+		<mkdir dir="${run}"/>
+		<mvnget o="org/mortbay/jetty" n="jetty-runner" r="8.1.7.v20120910" d="${run}/jetty-runner.jar" />
+		<java jar="${run}/jetty-runner.jar" fork="true">
+			<!-- classpath refid="compile-jars" / -->
+			<arg value="${war}" />
+		</java>
+	</target>
+
+	<target name="getlibs" depends="ivy">
+		<mkdir dir="${compile-lib}"/>
+		<mkdir dir="${runtime-lib}"/>
+		<ivy:settings file="ivysettings.xml"/>
+		<ivy:retrieve conf="runtime" pattern="${runtime-lib}/[artifact]-[type]-[revision].[ext]" />
+		<ivy:retrieve conf="compile" pattern="${compile-lib}/[artifact]-[type]-[revision].[ext]" />
+	</target>
+
+	<target name="cleanAll" depends="clean">
+		<delete dir="${build}"/>
+		<delete dir="${lib}"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}/main"/>
+	</target>
+
+	<target name="ivy" unless="sikip.download">
+		<mkdir dir="${build}"/>
+		<mkdir dir="${build}/ivy"/>
+		<wget src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar" dest="${build}/ivy/ivy-2.2.0.jar"/>
+		<path id="ivy.lib.path">
+			<fileset dir="${build}/ivy" includes="*.jar"/>
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+	</target>
+
+	<macrodef name="mvnget">
+		<attribute name="o" default="NOT SET"/>
+		<attribute name="n" default="NOT SET"/>
+		<attribute name="r" default="NOT SET"/>
+		<attribute name="d" default="NOT SET"/>
+		<sequential>
+			<wget src="http://repo2.maven.org/maven2/@{o}/@{n}/@{r}/@{n}-@{r}.jar" dest="@{d}" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="wget">
+		<attribute name="src" default="NOT SET"/>
+		<attribute name="dest" default="NOT SET"/>
+		<sequential>
+			<get src="@{src}" dest="@{dest}" verbose="true" usetimestamp="true" skipexisting="true" />
+		</sequential>
+	</macrodef>
+</project>
