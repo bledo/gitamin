@@ -21,6 +21,7 @@
   	<dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.2" conf="runtime->default" />
   	<dependency org="commons-io" name="commons-io" rev="2.3" conf="runtime->default" />
   	<dependency org="org.apache.commons" name="commons-lang3" rev="3.0" conf="runtime->default" />
+  	<dependency org="commons-codec" name="commons-codec" rev="1.7" conf="runtime->default" />
 
     </dependencies>
 </ivy-module>
