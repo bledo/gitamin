@@ -107,6 +107,13 @@ public class BledoServlet extends HttpServlet
 		}
 	}
 
+	/**
+	 * Override this method to pre/post process requests
+	 * 
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	protected Response processRequest(Request request) throws Exception
 	{
 		String action = request.getAction();

@@ -23,5 +23,6 @@
   	<dependency org="org.apache.commons" name="commons-lang3" rev="3.0" conf="runtime->default" />
   	<dependency org="commons-codec" name="commons-codec" rev="1.7" conf="runtime->default" />
 
+  	<dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2" conf="runtime->default" />
     </dependencies>
 </ivy-module>

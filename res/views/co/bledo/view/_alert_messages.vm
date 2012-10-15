@@ -1,0 +1,4 @@
+#foreach ($msg in $alert_messages.keySet() )
+	#set ($msg_type = $alert_messages.get($msg) )
+	<div class="alert $msg_type">$msg</div>	
+#end
