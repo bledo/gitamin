@@ -4,11 +4,7 @@
  */
 package bledo.gitamin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import bledo.VelocityTplParser;
 import bledo.mvc.Request;
 import javax.servlet.http.HttpServletResponse;
@@ -63,10 +59,7 @@ public class VelocityResponse extends bledo.mvc.response.VelocityResponse
 		}
 		
 		// Alert messages
-		Map<String, String> alert_messages = (Map<String, String>) req.getAttribute("alert-messages");
-		if (alert_messages == null) {
-			alert_messages = new HashMap<String, String>();
-		}
+		Map<String, String> alert_messages = Gitamin.session.getAlertMessages(req);
 		vp.assign("_alert_messages", alert_messages);
 		assign("ALERT_MESSAGES", vp.fetch("co/bledo/view/_alert_messages.vm"));
 		

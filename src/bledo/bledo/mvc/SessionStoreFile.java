@@ -63,13 +63,16 @@ public class SessionStoreFile implements SessionStore
 		
 		FileInputStream fis = null;
 		ObjectInputStream ois = null;
+		File sessFile = new File(_tmp + File.separator + sessid);
 		try {
 			log.debug("reading session from {}{}{}", new Object[]{_tmp, File.separator, sessid});
-			fis = new FileInputStream(_tmp + File.separator + sessid);
+			fis = new FileInputStream(sessFile);
 			ois = new ObjectInputStream(fis);
 			return (HashMap<String, Object>) ois.readObject();
 		} catch (FileNotFoundException e) {
-			log.error("{}", e);
+			//log.error("{}", e);
+			log.info("session file not found.  returning empty session.");
+			return  new HashMap<String, Object>();
 		} catch (IOException e) {
 			log.error("{}", e);
 		} catch (ClassNotFoundException e) {

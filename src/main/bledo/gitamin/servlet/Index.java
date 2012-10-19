@@ -7,7 +7,7 @@ import bledo.mvc.response.Response;
 
 
 @WebServlet(name = "Index", urlPatterns = {"/Index/*"})
-public class Index extends Auth
+public class Index extends PrivateServlet
 {
 	private static final long serialVersionUID = 1L;
 

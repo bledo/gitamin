@@ -58,8 +58,6 @@ public class BledoServlet extends HttpServlet
 			throw new ServletException(e);
 		}
 
-
-
 		// Status
 		log.info("status : {}", response.getStatus());
 		servletResponse.setStatus( response.getStatus() );

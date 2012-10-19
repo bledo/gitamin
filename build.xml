@@ -19,7 +19,7 @@
 
 	<target name="compile" depends="getlibs">
 		<mkdir dir="${build}/classes"/>
-		<javac includeantruntime="false" srcdir="${src}" destdir="${build}/classes">
+		<javac debug="true" includeantruntime="false" srcdir="${src}" destdir="${build}/classes">
 			<classpath refid="compile-jars" />
 		</javac>
 	</target>
@@ -62,6 +62,7 @@
 		<mkdir dir="${compile-lib}"/>
 		<mvnget o="org/mortbay/jetty" n="jetty-runner" r="8.1.7.v20120910" d="${compile-lib}/jetty-runner.jar" />
 		<java jar="${compile-lib}/jetty-runner.jar" fork="true">
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
 			<!-- classpath refid="compile-jars" / -->
 			<arg value="${war}" />
 		</java>
