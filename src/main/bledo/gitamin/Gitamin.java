@@ -1,5 +1,6 @@
 package bledo.gitamin;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,6 +9,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.servlet.http.HttpSession;
 import bledo.Util;
@@ -59,6 +61,35 @@ public class Gitamin
 		_setAlertMsg(req, Keys.alert_success, msg);
 	}
 	
+	
+	
+	public static class config {
+		
+		private static Properties _props = null;
+		private static String getProp(String key)
+		{
+			if (_props == null)
+			{
+				try {
+					_props = Util.loadProperties("gitamin");
+				} catch (IOException e) {
+					_props = new Properties();
+					e.printStackTrace();
+				}
+			}
+			return _props.getProperty(key);
+		}
+		
+		public static String getGitRepositoriesPath()
+		{
+			return getProp(Keys.git_repositories_paths);
+		}
+		
+		public static String getGitExportAll()
+		{
+			return getProp(Keys.git_export_all);
+		}
+	};
 	
 	
 	public static class session {

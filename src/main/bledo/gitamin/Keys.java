@@ -2,6 +2,10 @@ package bledo.gitamin;
 
 public class Keys
 {
+	
+	public static String git_repositories_paths = "git.repositories.path";
+	public static String git_export_all = "git.export.all";
+		
 	/**
 	 * Resource bundle name.  The name of the resource bundle properties file
 	 */

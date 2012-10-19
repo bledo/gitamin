@@ -11,6 +11,8 @@ import bledo.mvc.response.Redirect;
 import bledo.mvc.response.Response;
 import javax.servlet.annotation.WebServlet;
 
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+
 import static bledo.gitamin.Gitamin._;
 
 @WebServlet(name = "Auth", urlPatterns = {"/Auth/*"})
