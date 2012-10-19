@@ -1,23 +1,26 @@
 package bledo.gitamin;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpSession;
 import bledo.Util;
 import bledo.gitamin.db.DbException;
 import bledo.gitamin.db.NotFoundException;
 import bledo.gitamin.db.User;
 import bledo.mvc.Request;
-import bledo.mvc.Session;
-import bledo.mvc.response.Response;
 
 public class Gitamin
 {
@@ -25,84 +28,138 @@ public class Gitamin
 	
 	public static String _(Request req, String key, Object...args)
 	{
-		ResourceBundle rb = (ResourceBundle) req.getAttribute("resource_bundle");
+		ResourceBundle rb = (ResourceBundle) req.getAttribute( Keys.req_attr_resource_bundle );
 		if (rb == null) {
-			rb = ResourceBundle.getBundle("Gitamin_messages", req.getLocale());
-			req.setAttribute("resource_bundle", rb);
+			rb = ResourceBundle.getBundle(Keys.resource_bundle, req.getLocale());
+			req.setAttribute(Keys.req_attr_resource_bundle, rb);
 		}
 		
 		String pattern = rb.getString(key);
 		return MessageFormat.format(pattern, args);
 	}
 	
+	private static void _setAlertMsg(Request req, String type, String msg)
+	{
+		HttpSession sess = req.getSession(true);
+		@SuppressWarnings("unchecked")
+		Map<String, String> msgs = (Map<String, String>) sess.getAttribute( Keys.session_alert );
+		if (msgs == null)
+		{
+			msgs = new HashMap<String, String>();
+			sess.setAttribute( Keys.session_alert, msgs);
+		}
+		msgs.put(msg, type);
+	}
+	
+	public static void alertError(Request req, String msg) {
+		_setAlertMsg(req, Keys.alert_error, msg);
+	}
+	
+	public static void alertWarning(Request req, String msg) {
+		_setAlertMsg(req, Keys.alert_warning, msg);
+	}
+	
+	public static void alertInfo(Request req, String msg) {
+		_setAlertMsg(req, Keys.alert_info, msg);
+	}
+	
+	public static void alertSuccess(Request req, String msg) {
+		_setAlertMsg(req, Keys.alert_success, msg);
+	}
+	
+	
+	
+	public static class config {
+		
+		private static Properties _props = null;
+		private static String getProp(String key)
+		{
+			if (_props == null)
+			{
+				try {
+					_props = Util.loadProperties("gitamin");
+				} catch (IOException e) {
+					_props = new Properties();
+					e.printStackTrace();
+				}
+			}
+			return _props.getProperty(key);
+		}
+		
+		public static String getGitRepositoriesPath()
+		{
+			return getProp(Keys.git_repositories_paths);
+		}
+		
+		public static String getGitExportAll()
+		{
+			return getProp(Keys.git_export_all);
+		}
+	};
+	
+	
 	public static class session {
 		
 		public static void login(Request req, User user)
 		{
-			// already started?
-			Session sess = (Session) req.getAttribute("session");
-			if (sess == null) {
-				sess = Session.start(req);
-				req.setAttribute("session", sess);
-			}
-			
-			// destroy current session if already logged
-			Boolean logged = (Boolean) sess.get("is_logged");
-			if (logged != null) {
-				sess.destroy();
-				
-				// new session
-				sess = Session.start(req);
-				req.setAttribute("session", sess);
-			}
-			
-			sess.put("user", user);
+			HttpSession sess = req.getSession(true);
+			sess.setAttribute(Keys.session_user, user);
+			sess.setAttribute(Keys.session_is_logged, new Boolean(true));
 		}
 		
 		public static void logout(Request req)
 		{
 			if (!isLogged(req)) { return; } // not logged, return
-			Session sess = getSession(req);
-			sess.put("is_logged", false);
+			req.getSession(true).setAttribute("is_logged", false);
 		}
 		
 		public static Boolean isLogged(Request req)
 		{
-			Session sess = getSession(req);
-			Boolean logged = (Boolean) sess.get("is_logged");
+			HttpSession sess =  req.getSession(true);
+			Boolean logged = (Boolean) sess.getAttribute("is_logged");
 			if (logged == null) {
 				return false;
 			}
 			return logged;
 		}
 		
-		private static Session getSession(Request request)
+		public static void setWelcomeUrl(Request req, String uri)
 		{
-			// already started
-			Session sess = (Session) request.getAttribute("session");
-			if (sess != null) {
-				return sess;
-			}
-			
-			// not started...start!
-			sess = Session.start(request);
-			request.setAttribute("session", sess);
-			return sess;
+			HttpSession sess = req.getSession(true);
+			sess.setAttribute(Keys.session_welcomepage, uri);
 		}
-	
-		public static void end(Request request, Response response)
+		
+		public static String getWelcomeUrl(Request req)
 		{
-			Session sess = (Session) request.getAttribute("session");
-			
-			// no session...do nothing
-			if (sess == null) {
-				return;
+			HttpSession sess = req.getSession(true);
+			String uri = (String) sess.getAttribute(Keys.session_welcomepage);
+			if (uri == null) {
+				uri = req.getContextPath() + Keys.default_welcome_url;
+			} else {
+				sess.setAttribute(Keys.session_welcomepage, null);
 			}
-			
-			// call stop on started session
-			sess.stop(request, response);
+			return uri;
 		}
+		
+		public static Map<String, String> getAlertMessages(Request req)
+		{
+			HttpSession sess = req.getSession(true);
+			
+			@SuppressWarnings("unchecked")
+			Map<String, String> msgs = (Map<String, String>) sess.getAttribute( Keys.session_alert );
+			if (msgs == null)
+			{
+				msgs = new HashMap<String, String>();
+			}
+			sess.setAttribute(Keys.session_alert, new HashMap<String, String>());
+			
+			return msgs;
+		}
+		
 	};
+	
+	
+	
 	
 	
 	public static class storage
@@ -152,7 +209,7 @@ public class Gitamin
 					stmt.setString(3, Util.md5( pass ) );
 					
 					if ( !stmt.execute() ) {
-						throw new NotFoundException("Record not found");
+						throw new NotFoundException( "Record not found" );
 					}
 					
 					res = stmt.getResultSet();

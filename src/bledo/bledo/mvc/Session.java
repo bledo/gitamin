@@ -51,6 +51,7 @@ public class Session {
 	}
 	
 	public Object get(String key) {
+		hasChanged = true;
 		return _data.get(key);
 	}
 	public String getString(String key) {

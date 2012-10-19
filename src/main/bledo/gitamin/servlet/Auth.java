@@ -11,8 +11,7 @@ import bledo.mvc.response.Redirect;
 import bledo.mvc.response.Response;
 import javax.servlet.annotation.WebServlet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import static bledo.gitamin.Gitamin._;
 
@@ -21,34 +20,7 @@ public class Auth extends BaseServlet
 {
 	private static final long serialVersionUID = 1L;
 	
-	private static final Logger log = LoggerFactory.getLogger(Auth.class);
-	
-	@Override
-	protected Response processRequest(Request req) throws Exception
-	{
-		Boolean isLogged = Gitamin.session.isLogged(req);
-		if (!isLogged)
-		{
-			String servlet = req.getServerName();
-			if ( !"Auth".equals(servlet) )
-			{
-				// redirect
-				log.error("not authenticated...redirected to Auth/login");
-				return new Redirect(req.getContextPath() + "/Auth");
-			}
-			
-			String action = req.getAction();
-			if ( !( "index".equals( action ) || "login".equals( action ) || "dologin".equals( action ) ) )
-			{
-				// redirect
-				log.error("not authenticated...redirected to Auth/login");
-				return new Redirect(req.getContextPath() + "/Auth");
-			}
-
-		}
-		
-		return super.processRequest(req);
-	}
+	//private static final Logger log = LoggerFactory.getLogger(Auth.class);
 	
 	public Response index(Request req)
 	{
@@ -87,12 +59,12 @@ public class Auth extends BaseServlet
 			user = Gitamin.storage.userAuth(username, password);
 			if (!user.active)
 			{
-				this._error(req, _(req, "login.inactive.account"));
+				Gitamin.alertError(req, _(req, "login.inactive.account"));
 				return login(req);
 			}
 			else
 			{
-				Redirect resp = new Redirect(req.getContextPath() + "/Index");
+				Redirect resp = new Redirect( Gitamin.session.getWelcomeUrl(req) ); 
 				Gitamin.session.login(req, user);  // login
 				
 				// remember button is clicked
@@ -105,10 +77,10 @@ public class Auth extends BaseServlet
 				return resp;
 			}
 		} catch (DbException e) {
-			this._error(req, _(req, "login.auth.internal.error"));
+			Gitamin.alertError(req, _(req, "login.auth.internal.error"));
 			return login(req);
 		} catch (NotFoundException e) {
-			this._error(req, _(req, "login.auth.error"));
+			Gitamin.alertError(req, _(req, "login.auth.error"));
 			return login(req);
 		}
 	}

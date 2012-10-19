@@ -1,4 +1,7 @@
-#foreach ($msg in $alert_messages.keySet() )
-	#set ($msg_type = $alert_messages.get($msg) )
-	<div class="alert $msg_type">$msg</div>	
+#foreach ($msg in $_alert_messages.keySet() )
+	#set ($msg_type = $_alert_messages.get($msg) )
+	<div class="alert alert-block $msg_type">
+	<button type="button" class="close" data-dismiss="alert">x</button>
+	$msg
+	</div>	
 #end

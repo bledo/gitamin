@@ -4,6 +4,7 @@
 		<chain name="chain">
 			<ibiblio name="Central" m2compatible="true"/>
 			<ibiblio name="EclipseLink" m2compatible="true" root="http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo"/>
+			<!--ibiblio name="jGit" m2compatible="true" root="http://download.eclipse.org/jgit/maven"/-->
 			<ibiblio name="Jetty" m2compatible="true" root="https://oss.sonatype.org/content/groups/jetty"/>
 		</chain>
 	</resolvers>
