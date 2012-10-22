@@ -24,6 +24,7 @@
   	<dependency org="commons-codec" name="commons-codec" rev="1.7" conf="runtime->default" />
 
   	<dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2" conf="runtime->default" />
+	<dependency org="org.apache.sshd" name="apache-sshd" rev="0.8.0" conf="runtime->default"/>
 	<dependency org="org.eclipse.jgit" name="org.eclipse.jgit" rev="2.1.0.201209190230-r" conf="runtime->default" />
 	<dependency org="org.eclipse.jgit" name="org.eclipse.jgit.http.server" rev="2.1.0.201209190230-r" conf="runtime->default" />
     </dependencies>

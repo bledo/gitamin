@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpSession;
 import bledo.Util;
 import bledo.gitamin.db.DbException;
@@ -20,6 +24,8 @@ import bledo.mvc.Request;
 
 public class Gitamin
 {
+	private static final Logger log = LoggerFactory.getLogger(Gitamin.class);
+	
 	public static String _(Request req, String key, Object...args)
 	{
 		ResourceBundle rb = (ResourceBundle) req.getAttribute( Keys.req_attr_resource_bundle );
@@ -164,13 +170,29 @@ public class Gitamin
 			if (!__init)
 			{
 				Class.forName("org.sqlite.JDBC");
+				
+				Connection conn = null;
+				PreparedStatement stmt = null;
+				try {
+					conn = DriverManager.getConnection("jdbc:sqlite:/tmp/gitamin.sqlite3");
+					String sql = "CREATE TABLE IF NOT EXISTS user (username string, email string, `password` string, name string, primary key(username)";
+					stmt = conn.prepareStatement(sql);
+					stmt.execute();
+				} catch (SQLException e) {
+					log.error("{}", e);
+				}
+				finally
+				{
+					Util.closeQuietly(stmt);
+					Util.closeQuietly(conn);
+				}
 			}
 		}
 		
 		private static Connection getConnection() throws ClassNotFoundException, SQLException
 		{
 			_init();
-			Connection conn = DriverManager.getConnection("jdbc:sqlite:");
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:/tmp/gitamin.sqlite3");
 			return conn;
 		}
 		
@@ -181,7 +203,7 @@ public class Gitamin
 			ResultSet res = null;
 			try {
 					conn = getConnection();
-					stmt = conn.prepareStatement("SELECT * FROM user WHERE (username = ? or email = ?) AND pasword = ?");
+					stmt = conn.prepareStatement("SELECT * FROM user WHERE (username = ? or email = ?) AND `pasword` = ?");
 					stmt.setString(1, user);
 					stmt.setString(2, user);
 					stmt.setString(3, Util.md5( pass ) );
