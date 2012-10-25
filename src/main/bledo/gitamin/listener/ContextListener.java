@@ -1,11 +1,10 @@
 package bledo.gitamin.listener;
 
+import bledo.gitamin.Gitamin;
 import java.io.IOException;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.shell.ProcessShellFactory;
@@ -26,7 +25,7 @@ public class ContextListener implements ServletContextListener
 			sshd = SshServer.setUpDefaultServer();
 			
 			//
-			int sshPort = 2222;
+			int sshPort = Gitamin.config.getGitSshPort();
 			log.debug("ssh server port : {}", sshPort);
 			sshd.setPort(sshPort);
 			

@@ -1,13 +1,12 @@
 package bledo.gitamin.listener;
 
+import bledo.gitamin.Gitamin;
+import bledo.gitamin.db.DbException;
+import bledo.gitamin.db.NotFoundException;
 import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import bledo.gitamin.Gitamin;
-import bledo.gitamin.db.DbException;
-import bledo.gitamin.db.NotFoundException;
 
 public class GitaminSshPassAuth implements PasswordAuthenticator
 {
@@ -18,7 +17,9 @@ public class GitaminSshPassAuth implements PasswordAuthenticator
 		try {
 			Gitamin.storage.userAuth(username, password);
 			return true;
-		} catch (NotFoundException | DbException e) {
+		} catch (NotFoundException e) {
+			log.error("Authentication Error : {}", e);
+		} catch (DbException e) {
 			log.error("Authentication Error : {}", e);
 		}
 		return false;

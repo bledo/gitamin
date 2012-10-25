@@ -90,6 +90,11 @@ public class Gitamin
 		{
 			return getProp(Keys.git_repositories_paths);
 		}
+
+		public static int getGitSshPort()
+		{
+			return 2222;
+		}
 		
 		public static String getGitExportAll()
 		{
@@ -175,7 +180,7 @@ public class Gitamin
 				PreparedStatement stmt = null;
 				try {
 					conn = DriverManager.getConnection("jdbc:sqlite:/tmp/gitamin.sqlite3");
-					String sql = "CREATE TABLE IF NOT EXISTS user (username string, email string, `password` string, name string, primary key(username)";
+					String sql = "CREATE TABLE IF NOT EXISTS user (username string, email string, `password` string, name string, active number, primary key(username))";
 					stmt = conn.prepareStatement(sql);
 					stmt.execute();
 				} catch (SQLException e) {
@@ -203,7 +208,7 @@ public class Gitamin
 			ResultSet res = null;
 			try {
 					conn = getConnection();
-					stmt = conn.prepareStatement("SELECT * FROM user WHERE (username = ? or email = ?) AND `pasword` = ?");
+					stmt = conn.prepareStatement("SELECT * FROM user WHERE (username = ? or email = ?) AND `password` = ?");
 					stmt.setString(1, user);
 					stmt.setString(2, user);
 					stmt.setString(3, Util.md5( pass ) );
