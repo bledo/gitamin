@@ -173,7 +173,7 @@ public class HttpRequest extends HttpServletRequestWrapper implements Request
 	@Override
 	public String getUri() {
 		
-		String prot = req.getProtocol();
+		String prot = url.getProtocol(); //req.getProtocol();
 		int port = url.getPort();
 		if ( (prot.equals("https") && port == 443) || (prot.equals("http") && port == 80))
 		{

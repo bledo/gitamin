@@ -6,6 +6,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import org.apache.sshd.SshServer;
+import org.apache.sshd.server.Command;
+import org.apache.sshd.server.CommandFactory;
+import org.apache.sshd.server.command.ScpCommandFactory;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.shell.ProcessShellFactory;
 import org.slf4j.Logger;
@@ -33,9 +36,10 @@ public class ContextListener implements ServletContextListener
 			
 			//
 			String sshShell = "/usr/bin/git-shell";
+			//String sshShell = "/bin/bash";
 			log.debug("ssh server shell : {}", sshShell);
 			sshd.setShellFactory(new ProcessShellFactory(new String[] { sshShell }));
-			
+			sshd.setCommandFactory(new ScpCommandFactory());
 			//
 			sshd.setPasswordAuthenticator(new GitaminSshPassAuth());
 			

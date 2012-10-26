@@ -1,5 +1,10 @@
 package bledo.gitamin;
 
+import bledo.Util;
+import bledo.gitamin.db.DbException;
+import bledo.gitamin.db.NotFoundException;
+import bledo.gitamin.db.User;
+import bledo.mvc.Request;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,16 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
+import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpSession;
-import bledo.Util;
-import bledo.gitamin.db.DbException;
-import bledo.gitamin.db.NotFoundException;
-import bledo.gitamin.db.User;
-import bledo.mvc.Request;
 
 public class Gitamin
 {
