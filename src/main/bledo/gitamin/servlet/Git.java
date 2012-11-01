@@ -1,22 +1,21 @@
 package bledo.gitamin.servlet;
 
+import bledo.gitamin.Gitamin;
 import java.util.Enumeration;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
-import bledo.gitamin.Gitamin;
-
-@WebServlet(name = "Auth", urlPatterns = {"/*.git/"})
+@WebServlet(name = "Auth", urlPatterns = {"/git/*"})
 public class Git extends org.eclipse.jgit.http.server.GitServlet
 {
 	private static final long serialVersionUID = 1L;
 	
 	//base-path
 	@Override
-	public void init(final ServletConfig config) throws ServletException {
+	public void init(final ServletConfig config) throws ServletException
+	{
 		super.init(
 			new ServletConfig() {
 				@Override
